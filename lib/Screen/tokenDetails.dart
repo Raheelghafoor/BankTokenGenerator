@@ -54,7 +54,7 @@ class _TokenDetailsState extends State<TokenDetails> {
       print("${response.statusCode}");
       if (response.statusCode == 200 || response.statusCode == 201) {
         final Map<String, dynamic> data = jsonDecode(response.body);
-
+        print(" =-=-=-=-=-= $data ");
         if (data.containsKey('success') && data['success'] == true) {
           setState(() {
             token = data['token'] ?? 'N/A';
@@ -64,22 +64,25 @@ class _TokenDetailsState extends State<TokenDetails> {
                     .toLocal());
             time = formatedTime;
           });
+          DateTime alarmTime = DateTime.parse(
+              data['assigned_time'] ?? DateTime.now().toString())
+              .toLocal();
 
+          print("Time to Set Alarm: $alarmTime");
+          print("Token Created: $token");
+          print("Assigned Time: $time");
           await NotificationService.showScheduledNotification(
             id: 1,
             title: "Reminder",
             body: "Your appointment is coming up! with Token $token",
-            scheduledTime: DateTime.now().add(Duration(seconds: 20)), // 20 sec later
+            scheduledTime: alarmTime, // 20 sec later
           );
-          await AlarmService().saveAlarm(context,null,DateTime.now().add(const Duration(seconds: 20)),token);
+          await AlarmService().saveAlarm(context,null,alarmTime,token);
           await NotificationService.showInstantNotification(
             id: 2,
             title: "Token Number",
             body: "Your token number [ $token ] for appointment at $time",
           );
-
-          print("Token Created: $token");
-          print("Assigned Time: $time");
         } else {
           print(
               "Failed to create token: ${data['message'] ?? 'Unknown error'}");
