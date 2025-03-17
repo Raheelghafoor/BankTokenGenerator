@@ -1,4 +1,7 @@
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:token_reminder/Screen/alarmRingScreen.dart';
 import 'package:token_reminder/Screen/tokenDetails.dart';
 
 class Homepage extends StatefulWidget {
@@ -17,6 +20,22 @@ class _HomepageState extends State<Homepage> {
     "Card Issuance & Replacement",
     "Foreign Exchange Services"
   ];
+
+  @override
+  void initState() {
+    Alarm.ringStream.stream.listen((alarmSettings) => navigateToRingScreen(
+          alarmSettings,
+        ));
+    super.initState();
+  }
+
+  Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
+    {
+      if (context.mounted) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AlarmRingScreen(alarmSettings: alarmSettings,)));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +64,12 @@ class _HomepageState extends State<Homepage> {
                 serviceList.length,
                 (int index) => GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => TokenDetails(serviceName: serviceList[index],)));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TokenDetails(
+                                  serviceName: serviceList[index],
+                                )));
                   },
                   child: Container(
                     height: size.height * 0.2,
@@ -59,10 +83,9 @@ class _HomepageState extends State<Homepage> {
                         serviceList[index],
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.black,
-                          fontSize: size.width * 0.04,
-                          fontWeight: FontWeight.w600
-                        ),
+                            color: Colors.black,
+                            fontSize: size.width * 0.04,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
